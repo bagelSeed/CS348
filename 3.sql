@@ -1,0 +1,28 @@
+.read /u1/cs348/public/sqlite/createschema.sql
+.read /u1/cs348/public/sqlite/populate.sql
+
+/*
+	Question: 2
+	The trategy behind the formulation of my answer:
+	Reasonable assumptions:
+*/
+
+-- Class of at least 10 with average above 85
+CREATE TABLE CLASS_10_AVG_85 AS
+SELECT DISTINCT CNO,TERM,SECTION,AVG(MARK) as Average_Mark 
+FROM Enrollment
+GROUP BY CNO,SECTION,TERM 
+      HAVING COUNT(*)>=10 AND AVG(MARK)>85;
+
+-- With Prof
+CREATE TABLE WITH_PROF AS
+SELECT DISTINCT INSTRUCTOR,CLASS_10_AVG_85.CNO,CLASS_10_AVG_85.TERM,CLASS_10_AVG_85.SECTION,Average_Mark
+FROM CLASS_10_AVG_85 INNER JOIN Class on
+    CLASS_10_AVG_85.CNO=Class.CNO AND
+    CLASS_10_AVG_85.TERM=Class.TERM AND
+    CLASS_10_AVG_85.SECTION=Class.SECTION
+ORDER BY INSTRUCTOR,Class.CNO;
+
+SELECT DISTINCT PNAME,DEPT,CNO,TERM,SECTION,Average_Mark
+FROM WITH_PROF INNER JOIN Professor on WITH_PROF.INSTRUCTOR=PROFESSOR.EID
+ORDER BY PNAME,DEPT,CNO;
