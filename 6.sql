@@ -1,0 +1,112 @@
+.read /u1/cs348/public/sqlite/createschema.sql
+.read /u1/cs348/public/sqlite/populate.sql
+
+/*
+    Question 6:
+    The strategy behind the formulation of my answer:
+        - First I wanted to get a table that contains all Profs and their
+          Class that they are teaching. This is done by inner joinning all
+          Prof's EID with INSTRUCTOR from all Classes (P_CLASS)
+        - Then, I will to add more information for these class. I find the
+          Class's size by inner joinning P_CLASS with Enrollment to find
+          Everyone that is enrolled in that course. Then Find each of the
+          class (Indicated by CNO,TERM,SECTION) size and their average with
+          GROUP BY (CLASS_SIZE)
+        - I then went off tangent to find, via Prof's EID, all of the class
+          that are taught by then using GROUP BY. Then I use MIN's function
+          to find the minimum class size that were taught by that prof. If 
+          the minimum class size is at least ten, that prof is kept.(OVER_10)
+        - Lastly, I output the inner join of Prof with each class more than 
+          10 with the table that had all of the prof and their class that
+          were taught by them.
+    Assumptions:
+        - Output does not needed to be sorted/ordered in any way
+        - Class size is referring to the # of enrollment for a class
+
+*/
+
+-- All classes of a prof in Professor
+CREATE TABLE P_CLASS AS
+SELECT PNAME,EID,CNO,TERM,SECTION
+FROM Professor INNER JOIN Class ON
+     Professor.EID=Class.INSTRUCTOR
+;
+
+-- Get Class Size of each Prof's class
+CREATE TABLE CLASS_SIZE AS
+SELECT PNAME,EID,Enrollment.CNO AS CNO,
+       Enrollment.TERM AS TERM,
+       Enrollment.SECTION AS SECTION,
+       AVG(MARK) Average_Mark,
+       COUNT(SNO) Class_Size
+FROM P_CLASS INNER JOIN Enrollment ON
+     P_CLASS.CNO=Enrollment.CNO AND
+     P_CLASS.TERM=Enrollment.TERM AND
+     P_CLASS.SECTION=Enrollment.SECTION
+GROUP BY P_CLASS.CNO,P_CLASS.TERM,P_CLASS.SECTION
+;
+
+-- Prof with all class over 10
+CREATE TABLE OVER_10 AS
+SELECT PNAME,EID,Class_Size
+FROM CLASS_SIZE
+GROUP BY EID
+HAVING MIN(Class_Size) >= 10
+;
+
+-- OUTPUT
+SELECT CLASS_SIZE.PNAME,
+       CLASS_SIZE.CNO,
+       CLASS_SIZE.TERM,
+       CLASS_SIZE.SECTION,
+       CLASS_SIZE.Class_Size,
+       CLASS_SIZE.Average_Mark
+FROM OVER_10 INNER JOIN CLASS_SIZE ON
+     OVER_10.EID=CLASS_SIZE.EID
+;
+
+/* OUTPUT
+MOLLIE|MATH197|F01|2|46|71.8695652173913
+MOLLIE|MATH221|F99|2|49|70.4489795918367
+MOLLIE|MATH245|F99|1|72|70.7222222222222
+MOLLIE|MATH362|F05|2|32|73.625
+MOLLIE|MATH362|F99|3|64|72.015625
+MOLLIE|MATH362|S06|2|33|74.4848484848485
+MOLLIE|MATH381|F01|2|55|71.2545454545455
+MOLLIE|MATH381|F01|3|63|71.0
+MOLLIE|MATH427|F01|2|38|72.2368421052632
+MOLLIE|MATH427|F99|2|73|69.6027397260274
+MOLLIE|MATH428|F01|3|64|70.1875
+MOLLIE|MATH492|F99|2|70|72.3
+GAYLA|PHYS133|F99|2|76|73.6184210526316
+GAYLA|PHYS243|F01|3|65|72.1846153846154
+ZELDA|MATH225|F01|2|45|68.8
+ZELDA|MATH250|F99|2|74|71.7837837837838
+ZELDA|MATH334|F01|2|46|72.5652173913043
+ZELDA|MATH399|F01|1|53|72.0754716981132
+ZELDA|MATH424|F99|3|65|72.0461538461538
+ZELDA|MATH439|F99|2|85|72.2588235294118
+ZELDA|MATH474|F01|3|54|71.7222222222222
+ZELDA|MATH479|F01|1|70|70.8857142857143
+ZELDA|MATH492|F01|1|51|70.7647058823529
+MARLA|MATH225|F01|1|39|69.2564102564103
+MARLA|MATH245|F01|2|47|74.063829787234
+MARLA|MATH340|F01|3|44|72.7272727272727
+MARLA|MATH340|F99|2|71|72.0
+MARLA|MATH362|F99|2|58|69.2413793103448
+MARLA|MATH362|S02|2|33|73.8787878787879
+MARLA|MATH395|F99|2|77|71.4285714285714
+MARLA|MATH428|F01|2|44|70.6818181818182
+MARLA|MATH439|F01|2|58|70.051724137931
+MARLA|MATH476|F01|2|68|71.9411764705882
+MARLA|MATH476|F99|3|95|71.7263157894737
+MARLA|MATH479|F99|2|80|70.5625
+DENIS|CS136|F01|2|32|69.625
+DENIS|CS230|F01|2|37|70.972972972973
+DENIS|CS234|F99|3|36|69.6388888888889
+DENIS|CS247|F01|1|42|70.5714285714286
+DENIS|CS436|F99|3|56|72.6964285714286
+DENIS|CS442|F01|3|33|71.2727272727273
+DENIS|CS444|F01|1|45|72.1555555555556
+DENIS|CS447|F99|3|66|69.5151515151515
+*/
