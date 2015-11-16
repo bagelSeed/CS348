@@ -19,11 +19,8 @@ WHERE
 	INSTRUCTOR=EID
 
 ORDER BY CNO;
-
-/*OUTPUT
 Elementary Algorithm Design and Data Abstraction (advanced version)|CS146|HOLLIS
 Computer Architecture|CS450|BARBARA
 Computer Security and Privacy|CS458|HOLLIS
 Advanced Biochemistry|PHYS442|LILIA
 Research Project|PHYS451|DEBORA
-*/
