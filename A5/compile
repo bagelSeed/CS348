@@ -1,0 +1,2 @@
+javac -cp .:db2jcc4.jar:db2jcc_license_cu.jar m26luo_A5.java
+java -cp .:db2jcc4.jar:db2jcc_license_cu.jar m26luo_A5
