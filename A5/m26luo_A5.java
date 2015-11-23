@@ -1,3 +1,123 @@
+
+/*
+	Assignment 5
+
+	In this assignment, there will be one class being used (m26luo_A5) and it self will
+	be executing the main function of this question.
+	I've made a simple compile and run file that include the following two lines of code
+	in order to this file, along with the give .jar file:
+		javac -cp .:db2jcc4.jar:db2jcc_license_cu.jar m26luo_A5.java
+		java -cp .:db2jcc4.jar:db2jcc_license_cu.jar m26luo_A5
+	
+	The program m26luo_A5 will proceed to run and it will given the user instruction to 
+	what the user need to input.
+	The program will run as long as the input are correct and until the user asks the
+	program to terminate with the key word "exit" for any input field that it prompts
+
+	Design and Structure:
+	This class, m26luo_A5, uses simple SQL queries and data structures and manipulation
+	provided with Java and JDBC:
+		1) Program only uses 4 lines of simple queries, easy to understand
+		2) Uses very simple and straight forward approach, easy to follow through
+		3) Uses given Java data structures (Vector, String)
+
+	The high level approach to this assigment is the following:
+		- 	A department is given from the input, and it will be used to find the department
+		  	of which professor that resides within. Quoting: "A section is offered by a
+		  	department if it is taught by a professor from the department." Hence, the 
+		  	professor of the given department will be consider as candidate for further 
+		  	process
+		-	By finding all professors that are within the Department, all courses that
+			is/was taught by these professor can be easily extract as well
+		-	We are also given Years-begin and Years-end as out bound of the classes
+			that we are interested in. Assuming inclusive bound, all classes that
+			started on or past Year-begin and all classes that started on or before
+			Year-end will be taken consideration when we extract all enrollment of those
+			particular courses taught by the professor of the given department
+		- 	Similarily, we can extract the Course Name as well as each course's total Mark
+			and their size via the same way as above
+		- 	Now, we have all of the information that we can process the data without queries.
+			On a high level, the gather information that is currently stored within a vector
+			structure will be sorted via the Term (ie, the year) as well as the course #
+			within each of the Term. Next, their total enrollment, Course Average, Max
+			Average and Min average will be calculated within the Java program and proceed
+			to output the findings right after. Each of the courses that is selected for 
+			processing will be removed from the Vector, hence decrease runtime with each
+			iterations and reduce the number of times each element will needed to be accessed
+
+	Sample output:
+	Please follow the instructions to construct your query
+	Type 'exit' to anything of the field will terminate this program
+	Setting up connections:...
+	Enter Department:
+	CS
+	Enter Year Begin:
+	1989
+	Enter Year End:
+	1992
+	C#     | Name                                          | Enroll | #Section | Course Avg | Max Avg | Min Avg
+	CS134  | Principles of Computer Science                | 46     | 1        | 82         | 82      | 82
+	CS240  | Data Structures and Data Management           | 44     | 1        | 72         | 72      | 72
+	CS246  | Software Abstraction and Specification        | 44     | 1        | 67         | 67      | 67
+	CS342  | Concurrent Programming                        | 71     | 1        | 61         | 61      | 61
+	CS134  | Principles of Computer Science                | 170    | 2        | 70         | 75      | 62
+	CS240  | Data Structures and Data Management           | 148    | 3        | 62         | 66      | 61
+	CS241  | Foundation of Sequential Programs             | 148    | 3        | 73         | 76      | 64
+	CS246  | Software Abstraction and Specification        | 148    | 2        | 67         | 70      | 60
+	CS134  | Principles of Computer Science                | 79     | 4        | 64         | 68      | 55
+	CS240  | Data Structures and Data Management           | 134    | 2        | 59         | 65      | 53
+	CS241  | Foundation of Sequential Programs             | 147    | 3        | 73         | 79      | 68
+	CS246  | Software Abstraction and Specification        | 134    | 2        | 68         | 72      | 63
+	CS342  | Concurrent Programming                        | 148    | 1        | 72         | 72      | 72
+	CS134  | Principles of Computer Science                | 25     | 1        | 63         | 63      | 63
+	CS240  | Data Structures and Data Management           | 13     | 1        | 69         | 69      | 69
+	CS246  | Software Abstraction and Specification        | 13     | 1        | 42         | 42      | 42
+	Enter Department:
+	CS
+	Enter Year Begin:
+	1990
+	Enter Year End:
+	1993
+	C#     | Name                                          | Enroll | #Section | Course Avg | Max Avg | Min Avg
+	CS134  | Principles of Computer Science                | 170    | 2        | 70         | 75      | 62
+	CS240  | Data Structures and Data Management           | 148    | 3        | 62         | 66      | 61
+	CS241  | Foundation of Sequential Programs             | 148    | 3        | 73         | 76      | 64
+	CS246  | Software Abstraction and Specification        | 148    | 2        | 67         | 70      | 60
+	CS134  | Principles of Computer Science                | 79     | 4        | 64         | 68      | 55
+	CS240  | Data Structures and Data Management           | 134    | 2        | 59         | 65      | 53
+	CS241  | Foundation of Sequential Programs             | 147    | 3        | 73         | 79      | 68
+	CS246  | Software Abstraction and Specification        | 134    | 2        | 68         | 72      | 63
+	CS342  | Concurrent Programming                        | 148    | 1        | 72         | 72      | 72
+	CS134  | Principles of Computer Science                | 25     | 1        | 63         | 63      | 63
+	CS240  | Data Structures and Data Management           | 13     | 1        | 69         | 69      | 69
+	CS246  | Software Abstraction and Specification        | 13     | 1        | 42         | 42      | 42
+	CS240  | Data Structures and Data Management           | 21     | 1        | 75         | 75      | 75
+	CS241  | Foundation of Sequential Programs             | 21     | 1        | 72         | 72      | 72
+	CS246  | Software Abstraction and Specification        | 21     | 1        | 42         | 42      | 42
+	Enter Department:
+	CS
+	Enter Year Begin:
+	1991
+	Enter Year End:
+	1995
+	C#     | Name                                          | Enroll | #Section | Course Avg | Max Avg | Min Avg
+	CS134  | Principles of Computer Science                | 79     | 4        | 64         | 68      | 55
+	CS240  | Data Structures and Data Management           | 134    | 2        | 59         | 65      | 53
+	CS241  | Foundation of Sequential Programs             | 147    | 3        | 73         | 79      | 68
+	CS246  | Software Abstraction and Specification        | 134    | 2        | 68         | 72      | 63
+	CS342  | Concurrent Programming                        | 148    | 1        | 72         | 72      | 72
+	CS134  | Principles of Computer Science                | 25     | 1        | 63         | 63      | 63
+	CS240  | Data Structures and Data Management           | 13     | 1        | 69         | 69      | 69
+	CS246  | Software Abstraction and Specification        | 13     | 1        | 42         | 42      | 42
+	CS240  | Data Structures and Data Management           | 21     | 1        | 75         | 75      | 75
+	CS241  | Foundation of Sequential Programs             | 21     | 1        | 72         | 72      | 72
+	CS246  | Software Abstraction and Specification        | 21     | 1        | 42         | 42      | 42
+	CS342  | Concurrent Programming                        | 26     | 1        | 63         | 63      | 63
+	CS348  | Introduction to Database Management           | 48     | 2        | 75         | 76      | 74
+	CS354  | Operating Systems                             | 26     | 1        | 76         | 76      | 76
+	CS348  | Introduction to Database Management           | 79     | 2        | 76         | 77      | 74
+	Enter Department:
+*/
 import java.sql.*;
 import java.io.*;
 import java.util.*;
@@ -110,7 +230,6 @@ public class m26luo_A5 {
 			while (e_class.next()) {
 				boolean add_entry = false;
 				for (int i = 0; i < p_vec.size(); i++) {
-					// System.out.println("CNO: " + e_class.getString("CNO") + " | Term:" + e_class.getString("TERM") + " | Prof:" + e_class.getInt("INSTRUCTOR") + " | Depart Prof: " + p_vec.get(i));
 					if (e_class.getInt("INSTRUCTOR")==p_vec.get(i)) {
 						if (checkYear(e_class.getString("TERM"))) {
 							add_entry = true;
@@ -128,12 +247,10 @@ public class m26luo_A5 {
 			}
 
 			// Got the name of all classes
-			// System.out.println("cl_vec.size: " + cl_vec.size());
 			for (int i = 0; i < cl_vec.size();) {
 				// System.out.println("CNO: " + cl_vec.get(i).get(0));
 				ResultSet cname = stmt.executeQuery(	"SELECT CNAME FROM enrollment.Course WHERE enrollment.Course.CNO=\'" + cl_vec.get(i).get(0) + "\'");
 				while(cname.next()) {
-					// System.out.println(cname.getString("CNAME"));
 					cl_vec.get(i).addElement(cname.getString("CNAME"));
 				}
 
@@ -154,15 +271,9 @@ public class m26luo_A5 {
 				// total = total/size;
 				cl_vec.get(i).addElement(Integer.toString(total));
 				cl_vec.get(i).addElement(Integer.toString(size));
-				// System.out.println("CNO: " + cl_vec.get(i).get(0) + " | Term:" + cl_vec.get(i).get(1) + " | Section:" + cl_vec.get(i).get(2) + " | Average:" + cl_vec.get(i).get(4));
 				i++;
 			}
-
-
-
 			// CNO, TERM, SECTION, NAME, Total Mark, Size
-
-			// Ascending order on year, and course number
 			System.out.format("%-6s | %-45s | %-5s | %-5s | %-5s | %-5s | %-5s ",
 										"C#",
 										"Name",
@@ -174,11 +285,9 @@ public class m26luo_A5 {
 			System.out.println();
 			for (int i = 0; i < allTerms.size(); i++) {
 				int curr_term = allTerms.get(i);
-				// System.out.println("Current term: " + curr_term);
 				Vector <Vector<String>> outputVector = new Vector<Vector<String>>();
 				for (int j = 0; j < cl_vec.size();) {
 					String year = cl_vec.get(j).get(1);
-					// System.out.println("Trying term: " + Integer.parseInt(year.substring(1,3)));
 					if (curr_term == Integer.parseInt(year.substring(1,3))) {
 						Vector<String> entry = new Vector<String>();
 
@@ -212,7 +321,6 @@ public class m26luo_A5 {
 					int max_avg = -1;
 					int min_avg = 101;
 					int total = 0;
-
 					String cno = "", name = "", term="";
 
 					for (int j = 0; j < outputVector.size();) {
@@ -254,10 +362,7 @@ public class m26luo_A5 {
 					System.out.println();
 				}
 			}
-
-
 			stmt.close();
-
 		} catch(SQLException ex) {
 			System.err.print("SQLException: " + ex.getMessage());
 			System.exit(1);
@@ -266,8 +371,6 @@ public class m26luo_A5 {
 
 	public static boolean checkYear(String term) {
 		String year = term.substring(1,3);
-		// System.out.println("Start Year: " + y_begin%100 + " | End Year: " + y_end%100 + ". Given Year: " + Integer.parseInt(year));
-
 		boolean withinBound = false;
 		if (y_begin > y_end) {
 			if (Integer.parseInt(year) >= y_begin || Integer.parseInt(year) <= y_end){
@@ -293,7 +396,6 @@ public class m26luo_A5 {
 					allTerms.addElement(Integer.parseInt(year));
 				}
 			}
-			// System.out.println("Return true:");
 			return true;
 		}
 		return false;
